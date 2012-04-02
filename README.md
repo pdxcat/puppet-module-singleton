@@ -12,9 +12,9 @@ Because resources can only be declared once in a puppet manifest, including
 endeavour -- where "simple packages" are loosely defined as those which are too
 inconsequential to merit their own classes or modules. The `singleton_packages`
 function aims to detach inclusion of these kinds of trivial packages from the
-complexity of the Puppet DAG and eliminate the need to a-priori iterate the
-list of trivial packages that you might want to include (via means such as
-classes, virtual resources, or other contrivances), while simultaneously
+complexity of the Puppet DAG and eliminate the need to a-priori enumerate the
+entire list of trivial packages that you might want to include (via means such
+as classes, virtual resources, or other contrivances), while simultaneously
 allowing for a small level of user-excersised power and control beyond global
 or function-wide default parameters.
 
