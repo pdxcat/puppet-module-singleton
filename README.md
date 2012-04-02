@@ -59,7 +59,7 @@ File: $confdir/data/common.yaml
 
 ## Puppet Example for "vim" Package
 
-File: $modulepath/data/common.pp
+File: $modulepath/data/manifests/common.pp
 (or other appropriate file/class, per hiera configuration)
 
     class data::common {
