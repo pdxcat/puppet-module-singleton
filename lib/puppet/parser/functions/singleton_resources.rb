@@ -47,46 +47,57 @@ Puppet::Parser::Functions::newfunction(:singleton_resources, :doc => <<-'ENDHERE
 
   Puppet::Parser::Functions.autoloader.loadall
 
-  args.each do |resource|
-    next if function_defined(resource)
+  blank_config = {
+    :parameters => {},
+    :include_singleton_resources => [],
+    :include_classes => []
+  }
 
+  singleton_loaded = self.catalog.classes.include?('singleton')
+  function_include('singleton') unless singleton_loaded
+  scope = self.class_scope('singleton')
+
+  args.flatten.each do |resource|
     case resource
     when String
       # convert into resource
+      resource = Puppet::Resource.new(nil, resource)
     when Puppet::Resource
-      # yay
+      # yay!
     else
       raise ArgumentError, "Invalid argument of type '#{val.class}' to 'singleton_resources'"
     end
 
-    singleton_loaded = self.catalog.classes.include?('singleton')
-    function_include('singleton') unless singleton_loaded
-    scope = self.class_scope('singleton')
+    next if function_defined(resource)
 
-    type  = resource.type.to_s
-    title = resource.title.to_s
+    type  = resource.type.downcase
+    title = resource.title.downcase
     defaults_key = "singleton_resource_#{type}"
     resource_key = "singleton_resource_#{type}_#{title}"
 
     defaults = scope.function_hiera(defaults_key)
-    config   = scope.function_hiera(resource_key, defaults_key)
-    config[:parameters]                   ||= {}
-    config[:include_singleton_packages]   ||= []
-    config[:include_classes]              ||= []
-    defaults[:parameters]                 ||= {}
-    defaults[:include_singleton_packages] ||= []
-    defaults[:include_classes]            ||= []
+    config   = scope.function_hiera(resource_key, defaults)
 
     Puppet::Util.symbolizehash!(config)
     Puppet::Util.symbolizehash!(defaults)
+    defaults = blank_config.merge(defaults)
+    config   = blank_config.merge(config)
 
-    params = defaults[:parameters].merge(config[:parameters])
-    class_includes = defaults[:include_classes].merge(config[:include_classes])
-    singleton_includes = defaults[:include_singleton_resources].merge(config[:include_singleton_resources])
-    resource = { resource_key => params }
-    scope.function_create_resources([type, resource])
+    class_includes = defaults[:include_classes].concat(
+      config[:include_classes]
+    ).uniq
 
-    scope.function_singleton_packages(singleton_includes)
+    singleton_includes = defaults[:include_singleton_resources].concat(
+      config[:include_singleton_resources]
+    ).uniq
+
+    params = { :name => title }.merge(
+      defaults[:parameters].merge(
+        config[:parameters]
+    ))
+
+    scope.function_create_resources([type, {title => params}])
+    scope.function_singleton_resources(singleton_includes)
     scope.function_include(class_includes)
 
   end
