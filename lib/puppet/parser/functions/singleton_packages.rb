@@ -32,7 +32,7 @@ Puppet::Parser::Functions::newfunction(:singleton_packages, :doc => <<-'ENDHERED
 
   Puppet::Parser::Functions.autoloader.loadall
 
-  args.each do |title, params|
+  args.each do |title|
     next if findresource("Package[singleton_package_#{title}]")
 
     defaults = {
