@@ -79,9 +79,12 @@ Puppet::Parser::Functions::newfunction(:singleton_resources, :doc => <<-'ENDHERE
     config   = scope.function_hiera(resource_key, defaults)
 
     Puppet::Util.symbolizehash!(config)
+    Puppet::Util.symbolizehash!(config[:parameters])
+    config = blank_config.merge(config)
+
     Puppet::Util.symbolizehash!(defaults)
+    Puppet::Util.symbolizehash!(defaults[:parameters])
     defaults = blank_config.merge(defaults)
-    config   = blank_config.merge(config)
 
     class_includes = defaults[:include_classes].concat(
       config[:include_classes]
