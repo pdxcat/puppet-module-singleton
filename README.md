@@ -3,6 +3,25 @@
 The Singleton module provides functions that dynamically create resources
 defined either by built-in defaults or by hiera-supplied parameters.
 
+
+## Dependencies
+
+### create_resources
+
+This module requires Puppet >= 2.7.14 due to the following bug in the create_resources function
+
+* [http://projects.puppetlabs.com/issues/13567](http://projects.puppetlabs.com/issues/13567)
+
+### Hiera
+
+This module depends on hiera which is introduced in Puppet 3.0. Users on lower versions can use the 
+following rubygems which provides this functionality:
+
+    gem install hiera hiera-puppet
+
+* [http://github.com/puppetlabs/hiera](http://github.com/puppetlabs/hiera)
+* [http://github.com/puppetlabs/hiera-puppet](http://github.com/puppetlabs/hiera-puppet)
+
 ## Functions
 
 ### singleton_packages
