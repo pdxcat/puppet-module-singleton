@@ -43,21 +43,21 @@ Puppet::Parser::Functions::newfunction(:singleton_packages, :doc => <<-'ENDHERED
     }
 
     singleton_loaded = self.catalog.classes.include?('singleton')
-    function_include('singleton') unless singleton_loaded
+    function_include(['singleton']) unless singleton_loaded
     scope = self.class_scope('singleton')
 
-    config = scope.function_hiera("singleton_package_#{title}", defaults)
+    config = scope.function_hiera(["singleton_package_#{title}", defaults])
     config[:parameters]                 ||= {}
     config[:include_singleton_packages] ||= []
     config[:include_classes]            ||= []
-    Puppet::Util.symbolizehash!(config)
+    config = Puppet::Util.symbolizehash(config)
 
     params = defaults[:parameters].merge(config[:parameters])
     resource = { "singleton_package_#{title}" => params }
     scope.function_create_resources(['package', resource])
 
-    scope.function_singleton_packages(config[:include_singleton_packages])
-    scope.function_include(config[:include_classes])
+    scope.function_singleton_packages([config[:include_singleton_packages]])
+    scope.function_include([config[:include_classes]])
 
   end
 end

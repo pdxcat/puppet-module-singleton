@@ -54,7 +54,7 @@ Puppet::Parser::Functions::newfunction(:singleton_resources, :doc => <<-'ENDHERE
   }
 
   singleton_loaded = self.catalog.classes.include?('singleton')
-  function_include('singleton') unless singleton_loaded
+  function_include(['singleton']) unless singleton_loaded
   scope = self.class_scope('singleton')
 
   args.flatten.each do |resource|
@@ -68,22 +68,22 @@ Puppet::Parser::Functions::newfunction(:singleton_resources, :doc => <<-'ENDHERE
       raise ArgumentError, "Invalid argument of type '#{val.class}' to 'singleton_resources'"
     end
 
-    next if function_defined(resource)
+    next if function_defined([resource])
 
     type  = resource.type.downcase
     title = resource.title.downcase
     defaults_key = "singleton_resource_#{type}"
     resource_key = "singleton_resource_#{type}_#{title}"
 
-    defaults = scope.function_hiera(defaults_key)
-    config   = scope.function_hiera(resource_key, defaults)
+    defaults = scope.function_hiera([defaults_key])
+    config   = scope.function_hiera([resource_key, defaults])
 
-    Puppet::Util.symbolizehash!(config)
-    Puppet::Util.symbolizehash!(config[:parameters])
+    config = Puppet::Util.symbolizehash(config)
+    config[:parameters] = Puppet::Util.symbolizehash(config[:parameters])
     config = blank_config.merge(config)
 
-    Puppet::Util.symbolizehash!(defaults)
-    Puppet::Util.symbolizehash!(defaults[:parameters])
+    defaults = Puppet::Util.symbolizehash(defaults)
+    defaults[:parameters] = Puppet::Util.symbolizehash(defaults[:parameters])
     defaults = blank_config.merge(defaults)
 
     class_includes = defaults[:include_classes].concat(
@@ -100,8 +100,8 @@ Puppet::Parser::Functions::newfunction(:singleton_resources, :doc => <<-'ENDHERE
     ))
 
     scope.function_create_resources([type, {title => params}])
-    scope.function_singleton_resources(singleton_includes)
-    scope.function_include(class_includes)
+    scope.function_singleton_resources([singleton_includes])
+    scope.function_include([class_includes])
 
   end
 
