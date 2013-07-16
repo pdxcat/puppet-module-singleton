@@ -61,12 +61,12 @@ The following puppet code can be used to install three packages, "vim",
     singleton_packages("vim", "emacs", "nano")
 
 By default, each package will be created as if it had been given the parameters:
-
-    package { "singleton_package_$name":
-      ensure => present,
-      name   => $name,
-    }
-
+```puppet
+package { "singleton_package_$name":
+  ensure => present,
+  name   => $name,
+}
+```
 Additional customization can be supplied by adding hiera data. You may supply
 parameters, additional singleton_packages to chain-include, and additional
 classes to include.
