@@ -24,9 +24,9 @@ following rubygems which provides this functionality:
 
 ## Functions
 
-### singleton_packages
+### `singleton_packages`
 
-singleton_packages is intended to be used as a tool to address the problem of
+`singleton_packages` is intended to be used as a tool to address the problem of
 simple package inclusion in puppet manifests.
 
 Because resources can only be declared once in a puppet manifest, including
@@ -43,129 +43,132 @@ or function-wide default parameters.
 The `singleton_package` function is called with the name(s) of the package(s)
 to install. It does not matter how many times the function is called for a
 given package name, the resource will only be defined once, and will be defined
-within the scope of Class[singleton].
+within the scope of `Class[singleton]`.
 
-### singleton_resources
+### `singleton_resources`
 
-singleton_resources is a generalization from singleton_packages to arbitrary
-resource types. While singleton_packages expects string arguments,
-singleton_resources expects resource specifiers such as Package['vim'].
+`singleton_resources` is a generalization from `singleton_packages` to arbitrary
+resource types. While `singleton_packages` expects string arguments,
+`singleton_resources` expects resource specifiers such as `Package['vim']`.
+
 
 # Examples
 
-## singleton_packages
+## `singleton_packages`
 
 The following puppet code can be used to install three packages, "vim",
 "emacs", and "nano".
-
-    singleton_packages("vim", "emacs", "nano")
-
+```puppet
+singleton_packages("vim", "emacs", "nano")
+```
 By default, each package will be created as if it had been given the parameters:
-
-    package { "singleton_package_$name":
-      ensure => present,
-      name   => $name,
-    }
-
+```puppet
+package { "singleton_package_$name":
+  ensure => present,
+  name   => $name,
+}
+```
 Additional customization can be supplied by adding hiera data. You may supply
-parameters, additional singleton_packages to chain-include, and additional
+parameters, additional `singleton_packages` to chain-include, and additional
 classes to include.
 
 ### YAML Example for "vim" Package
 
 File: $confdir/data/common.yaml
 (or other appropriate file, per hiera configuration)
-
-    ---
-    :singleton_package_vim:
-      :parameters:
-        :name: vim
-        :ensure: present
-      :include_singleton_packages:
-      - vim-puppet
-      :include_classes:
-      - stdlib
-      - obviouslyfakeclass
-
+```yaml
+---
+:singleton_package_vim:
+  :parameters:
+    :name: vim
+    :ensure: present
+  :include_singleton_packages:
+  - vim-puppet
+  :include_classes:
+  - stdlib
+  - obviouslyfakeclass
+```
 ### Puppet Example for "vim" Package
 
 File: $modulepath/data/manifests/common.pp
 (or other appropriate file/class, per hiera configuration)
-
-    class data::common {
-      $singleton_package_vim = {
-        parameters => {
-          ensure => present,
-          name   => 'vim',
-        },
-        include_singleton_packages => [
-          "vim-puppet",
-        ],
-        include_classes => [
-          "stdlib",
-          "obviouslyfakeclass",
-        ],
-      }
-    }
-
-## singleton_resources
+```puppet
+class data::common {
+  $singleton_package_vim = {
+    parameters => {
+      ensure => present,
+      name   => 'vim',
+    },
+    include_singleton_packages => [
+      "vim-puppet",
+    ],
+    include_classes => [
+      "stdlib",
+      "obviouslyfakeclass",
+    ],
+  }
+}
+```
+## `singleton_resources`
 
 The following puppet code can be used to install three packages, "vim",
 "emacs", and "nano".
-
-    singleton_resources(
-      Package['vim'],
-      Package['emacs'],
-      Package['nano'],
-    )
-
+```puppet
+singleton_resources(
+  Package['vim'],
+  Package['emacs'],
+  Package['nano'],
+)
+```
 Default parameters must be supplied for every type used with
-singleton_resources. The singleton module comes with a set of defaults only for
+` singleton_resources`. The singleton module comes with a set of defaults only for
 the Package resource type. Other defaults must be supplied by the user.
 
-For the Package['vim'] example and the module-supplied package resource
-defaults, Package['vim'] will be created as if it had been given the
+For the `Package['vim']` example and the module-supplied package resource
+defaults, `Package['vim']` will be created as if it had been given the
 parameters:
-
-    package { "$title":
-      ensure => present,
-      name   => $title,
-    }
+```puppet
+package { "$title":
+  ensure => present,
+  name   => $title,
+}
+```
 
 ### Defaults for Package resource type (YAML)
-
-    ---
-    :singleton_resource_package:
-      :parameters:
-        :ensure: present
-
-### Package['vim'] Customization (YAML)
-
-    ---
-    :singleton_resource_package_vim:
-      :parameters:
-        :name: vim
-        :ensure: present
-      :include_singleton_resources:
-      - Package[vim-puppet]
-      :include_classes:
-      - stdlib
-      - obviouslyfakeclass
-
-### Package['vim'] Customization (Puppet)
-
-    class data::common {
-      $singleton_resource_package_vim = {
-        parameters => {
-          ensure => present,
-          name   => 'vim',
-        },
-        include_singleton_resources => [
-          "Package[vim-puppet]",
-        ],
-        include_classes => [
-          "stdlib",
-          "obviouslyfakeclass",
-        ],
-      }
-    }
+```yaml
+---
+:singleton_resource_package:
+  :parameters:
+    :ensure: present
+```
+### `Package['vim']` Customization (YAML)
+```yaml
+---
+:singleton_resource_package_vim:
+  :parameters:
+    :name: vim
+    :ensure: present
+  :include_singleton_resources:
+  - Package[vim-puppet]
+  :include_classes:
+  - stdlib
+  - obviouslyfakeclass
+```
+### `Package['vim']` Customization (Puppet)
+```puppet
+class data::common {
+  $singleton_resource_package_vim = {
+    parameters => {
+      ensure => present,
+      name   => 'vim',
+    },
+    include_singleton_resources => [
+      "Package[vim-puppet]",
+    ],
+    include_classes => [
+      "stdlib",
+      "obviouslyfakeclass",
+    ],
+  }
+}
+```
