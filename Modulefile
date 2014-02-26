@@ -1,5 +1,5 @@
 name    'pdxcat-singleton'
-version '0.0.4'
+version '0.0.5'
 source 'git://github.com/pdxcat/puppet-module-singleton'
 author 'Reid Vandewiele'
 license 'Apache 2.0'

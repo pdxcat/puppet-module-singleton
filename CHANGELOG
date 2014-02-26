@@ -1,3 +1,13 @@
+## 2014-02-26 Release 0.0.5
+### Summary:
+
+This release has a minor bug fix and readme update.
+
+### Bugfixes:
+
+  - flatten arguments to singleton_packages()
+  - README updates
+
 0.0.4 - pdxcat/singleton - 2013/05/30
 
 b19d111 Modify singleton for use with Puppet 3.0
