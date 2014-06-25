@@ -34,6 +34,7 @@ Puppet::Parser::Functions::newfunction(:singleton_packages, :doc => <<-'ENDHERED
 
   args.flatten.each do |title|
     next if findresource("Package[singleton_package_#{title}]")
+    next if findresource("Package[#{title}]")
 
     defaults = {
       :parameters => {
