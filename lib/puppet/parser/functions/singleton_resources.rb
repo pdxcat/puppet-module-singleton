@@ -70,8 +70,8 @@ Puppet::Parser::Functions::newfunction(:singleton_resources, :doc => <<-'ENDHERE
 
     next if function_defined([resource])
 
-    type  = resource.type.downcase
-    title = resource.title.downcase
+    type  = resource.type
+    title = resource.title
     defaults_key = "singleton_resource_#{type}"
     resource_key = "singleton_resource_#{type}_#{title}"
 
